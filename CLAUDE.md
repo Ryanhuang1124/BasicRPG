@@ -514,20 +514,30 @@ Lv10到達: HP 234, 攻撃力 47 (1.1^9 ≈ 2.36倍)
 
 ## ビルド・実行方法
 
-### コンパイル
+### コンパイル（両バージョン共通）
 ```bash
 cd "C:\Users\ko8516\Desktop\VSCode Projects\BasicRPG"
-javac -encoding UTF-8 -d bin src/com/rpg/*.java
+javac -encoding UTF-8 -d bin src/com/rpg/*.java src/com/rpg/gui/*.java src/com/rpg/cui/*.java
 ```
 
-### 実行 (PowerShell)
+### GUI版実行 (PowerShell)
 ```powershell
-java "-Dfile.encoding=UTF-8" -cp bin com.rpg.GameWindow
+java "-Dfile.encoding=UTF-8" -cp bin com.rpg.gui.GameWindow
 ```
 
-### 実行 (CMD/Bash)
+### GUI版実行 (CMD/Bash)
 ```bash
-java -Dfile.encoding=UTF-8 -cp bin com.rpg.GameWindow
+java -Dfile.encoding=UTF-8 -cp bin com.rpg.gui.GameWindow
+```
+
+### CUI版（テキスト版）実行 (PowerShell)
+```powershell
+java "-Dfile.encoding=UTF-8" -cp bin com.rpg.cui.TextGame
+```
+
+### CUI版（テキスト版）実行 (CMD/Bash)
+```bash
+java -Dfile.encoding=UTF-8 -cp bin com.rpg.cui.TextGame
 ```
 
 ## ファイル構成
@@ -535,29 +545,53 @@ java -Dfile.encoding=UTF-8 -cp bin com.rpg.GameWindow
 ```
 BasicRPG/
 ├── src/com/rpg/
-│   ├── GameWindow.java          # メインクラス
-│   ├── GameManager.java         # ゲーム状態管理 (Singleton)
-│   ├── GameState.java           # State インターフェース
-│   ├── MapState.java            # マップ探索状態
-│   ├── BattleState.java         # 戦闘状態
-│   ├── DialogState.java         # 会話状態
-│   ├── KingRevealState.java     # 王様正体暴露状態 (NEW!)
+│   │   # === 共通クラス ===
+│   ├── GameManager.java         # ゲーム状態管理 (Singleton) - 共通
 │   ├── Character.java           # キャラクター基底クラス
 │   ├── Human.java               # 人間系基底クラス
-│   ├── Hero.java                # 勇者クラス (転職システム追加)
+│   ├── Hero.java                # 勇者クラス
+│   ├── SuperHero.java           # スーパー勇者クラス
+│   ├── TrueHero.java            # 真勇者クラス
 │   ├── Wizard.java              # 魔法使いクラス
-│   ├── King.java                # 王様クラス (戦闘可能に)
-│   ├── Princess.java            # お姫様クラス (結婚エンディング追加)
-│   ├── Hermit.java              # 隠士クラス (NEW!)
+│   ├── King.java                # 王様クラス（隠しボス）
+│   ├── Princess.java            # お姫様クラス
+│   ├── Hermit.java              # 隠士クラス
 │   ├── Enemy.java               # 敵基底クラス
 │   ├── Slime.java               # スライムクラス
 │   ├── Goblin.java              # ゴブリンクラス
 │   ├── Werewolf.java            # 狼男クラス
 │   ├── DemonKing.java           # 魔王クラス
 │   └── EnemyFactory.java        # 敵生成ファクトリー
+│   │
+│   ├── gui/                     # === GUI版専用 ===
+│   │   ├── GameWindow.java      # GUI版メインクラス
+│   │   ├── GamePanel.java       # 描画パネル
+│   │   ├── GUIManager.java      # GUI状態管理 (Singleton)
+│   │   ├── GameState.java       # State インターフェース
+│   │   ├── MapState.java        # マップ探索状態
+│   │   ├── BattleState.java     # 戦闘状態
+│   │   ├── DialogState.java     # 会話状態
+│   │   ├── KingRevealState.java # 王様正体暴露状態
+│   │   ├── TrueEndingState.java # 真エンディング
+│   │   └── TrueTrueEndingState.java # 真の真エンディング
+│   │
+│   └── cui/                     # === CUI版（テキスト版）専用 ===
+│       └── TextGame.java        # CUI版メインクラス
+│
 ├── bin/                         # コンパイル済みクラスファイル
 └── CLAUDE.md                    # このファイル
 ```
+
+## バージョン違い
+
+| 機能 | GUI版 | CUI版（テキスト版） |
+|------|-------|---------------------|
+| 操作 | 方向キー/マウス | 数字入力 |
+| マップ移動 | 15×12 グリッド | 地点選択メニュー |
+| 敵遭遇 | 草地で30%確率 | 探索で30%確率 |
+| 戦闘 | グラフィカルUI | テキストメニュー |
+| 魔法使い加入 | 20%確率 | **100%確定** |
+| NPC出現 | 座標移動で会う | メニューで選択 |
 
 ## 重要な設計決定
 

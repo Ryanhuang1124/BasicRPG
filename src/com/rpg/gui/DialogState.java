@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -121,12 +122,12 @@ public class DialogState implements GameState {
         // 隠士が決闘を仕掛けてきた場合
         if (lastMessage.contains("（隠士が決闘を仕掛けてきた！）") && npc instanceof Hermit) {
             Hermit hermit = (Hermit) npc;
-            GameManager.getInstance().changeState(new BattleState(player, hermit));
+            GUIManager.getInstance().changeState(new BattleState(player, hermit));
             return;
         }
 
         // 通常の会話終了
-        GameManager.getInstance().changeState(new MapState(player));
+        GUIManager.getInstance().changeState(new MapState(player));
     }
 
     /**
@@ -142,7 +143,7 @@ public class DialogState implements GameState {
             TrueHero trueHero = hermit.performJobChange(player);
             GameManager.getInstance().setPlayer(trueHero);  // プレイヤーを置き換え
             String[] jobChangeMessages = hermit.getJobChangeMessages();
-            GameManager.getInstance().changeState(new DialogState(trueHero, "隠士", jobChangeMessages));
+            GUIManager.getInstance().changeState(new DialogState(trueHero, "隠士", jobChangeMessages));
             return;
         }
 
@@ -154,7 +155,7 @@ public class DialogState implements GameState {
                 TrueHero reborn = hermit.performRebirth(oldTrueHero);
                 GameManager.getInstance().setPlayer(reborn);  // プレイヤーを置き換え
                 String[] rebirthMessages = hermit.getRebirthMessages(reborn.getRebirthCount());
-                GameManager.getInstance().changeState(new DialogState(reborn, "隠士", rebirthMessages));
+                GUIManager.getInstance().changeState(new DialogState(reborn, "隠士", rebirthMessages));
             }
             return;
         }
@@ -164,7 +165,7 @@ public class DialogState implements GameState {
             King king = (King) npc;
             String[] revealMessages = king.revealIdentity();
             // 正体暴露メッセージを表示してから戦闘へ
-            GameManager.getInstance().changeState(new KingRevealState(player, king, revealMessages));
+            GUIManager.getInstance().changeState(new KingRevealState(player, king, revealMessages));
             return;
         }
 
@@ -179,7 +180,7 @@ public class DialogState implements GameState {
 
         // 選択肢がある場合は会話を終了してマップに戻る
         if (lastMessage.contains("Y/N")) {
-            GameManager.getInstance().changeState(new MapState(player));
+            GUIManager.getInstance().changeState(new MapState(player));
         }
     }
 }

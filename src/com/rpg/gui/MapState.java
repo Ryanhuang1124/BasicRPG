@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
@@ -267,7 +268,7 @@ public class MapState implements GameState {
                 Enemy enemy = EnemyFactory.createRandomEnemy();
                 System.out.println(enemy.getName() + "と遭遇した！");
                 // 戦闘状態に切り替え
-                GameManager.getInstance().changeState(new BattleState(player, enemy));
+                GUIManager.getInstance().changeState(new BattleState(player, enemy));
             }
         }
     }
@@ -289,7 +290,7 @@ public class MapState implements GameState {
                     "スライム、ゴブリン、狼男。",
                     "この3種類の魔物を全て倒してから\nまた来るがよい。"
                 };
-                GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
                 return;
             }
 
@@ -313,7 +314,7 @@ public class MapState implements GameState {
                         "よかろう、お前の冒険に同行しよう！",
                         "私の力で、お前をスーパー勇者に\n変身させてやろう！"
                     };
-                    GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                    GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
                 } else {
                     String[] messages = {
                         "魔法使い：ようこそ、若き勇者よ。",
@@ -321,7 +322,7 @@ public class MapState implements GameState {
                         "しかし今は忙しい...",
                         "悪いが、また今度にしてくれ。"
                     };
-                    GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                    GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
                 }
             } else if (wizardJoined) {
                 // すでに仲間になっている場合
@@ -330,7 +331,7 @@ public class MapState implements GameState {
                     "お前はもうスーパー勇者だ。",
                     "魔王を倒す力を持っている！"
                 };
-                GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
             } else {
                 // 一度断られた後、再度話しかける場合
                 if (random.nextInt(100) < 20) {
@@ -347,13 +348,13 @@ public class MapState implements GameState {
                         "よかろう、お前の冒険に同行しよう！",
                         "私の力で、お前をスーパー勇者に\n変身させてやろう！"
                     };
-                    GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                    GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
                 } else {
                     String[] messages = {
                         "魔法使い：まだ忙しいのだ...",
                         "また今度にしてくれ。"
                     };
-                    GameManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                    GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
                 }
             }
             return;
@@ -364,7 +365,7 @@ public class MapState implements GameState {
             isAdjacentTo(px, py, KING_X, KING_Y)) {
             King king = new King();
             String[] messages = king.getDialogMessages(player);
-            GameManager.getInstance().changeState(new DialogState(player, king, "王様", messages));
+            GUIManager.getInstance().changeState(new DialogState(player, king, "王様", messages));
             return;
         }
 
@@ -374,7 +375,7 @@ public class MapState implements GameState {
             isAdjacentTo(px, py, PRINCESS_X, PRINCESS_Y)) {
             Princess princess = new Princess();
             String[] messages = princess.getDialogMessages(player);
-            GameManager.getInstance().changeState(new DialogState(player, princess, "お姫様", messages));
+            GUIManager.getInstance().changeState(new DialogState(player, princess, "お姫様", messages));
             return;
         }
 
@@ -383,7 +384,7 @@ public class MapState implements GameState {
             isAdjacentTo(px, py, HERMIT_X, HERMIT_Y)) {
             Hermit hermit = new Hermit();
             String[] messages = hermit.getDialogMessages(player);
-            GameManager.getInstance().changeState(new DialogState(player, hermit, "隠士", messages));
+            GUIManager.getInstance().changeState(new DialogState(player, hermit, "隠士", messages));
             return;
         }
     }

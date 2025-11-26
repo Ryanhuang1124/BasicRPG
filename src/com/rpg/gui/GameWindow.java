@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import javax.swing.*;
 
 /**
@@ -38,7 +39,7 @@ public class GameWindow extends JFrame {
         GameManager.getInstance().setPlayer(player);
 
         // 初期状態をマップ探索に設定
-        GameManager.getInstance().changeState(new MapState(player));
+        GUIManager.getInstance().changeState(new MapState(player));
     }
 
     public static void main(String[] args) {

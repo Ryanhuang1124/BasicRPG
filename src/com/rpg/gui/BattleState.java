@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -10,14 +11,14 @@ import java.awt.event.KeyEvent;
 public class BattleState implements GameState {
 
     private Hero player;
-    private Character enemy;  // Character型に変更（KingとEnemyの両方を受け入れる）
+    private com.rpg.Character enemy;  // Character型に変更（KingとEnemyの両方を受け入れる）
     private String message;                // メッセージ表示用
     private int selectedOption = 0;        // 選択中のオプション
     private boolean playerTurn = true;     // プレイヤーのターンフラグ
     private int maxOptions;                // 利用可能なオプション数
     private Princess princess;             // お姫様（魔王戦のみ）
 
-    public BattleState(Hero player, Character enemy) {
+    public BattleState(Hero player, com.rpg.Character enemy) {
         this.player = player;
         this.enemy = enemy;
 
@@ -369,7 +370,7 @@ public class BattleState implements GameState {
             new Thread(() -> {
                 try {
                     Thread.sleep(1000);
-                    GameManager.getInstance().changeState(new MapState(player));
+                    GUIManager.getInstance().changeState(new MapState(player));
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -424,7 +425,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new MapState(player));
+                        GUIManager.getInstance().changeState(new MapState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -436,7 +437,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new TrueEndingState(player));
+                        GUIManager.getInstance().changeState(new TrueEndingState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -448,7 +449,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new TrueTrueEndingState(player));
+                        GUIManager.getInstance().changeState(new TrueTrueEndingState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -458,7 +459,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new MapState(player));
+                        GUIManager.getInstance().changeState(new MapState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -522,7 +523,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new MapState(player));
+                        GUIManager.getInstance().changeState(new MapState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -534,7 +535,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new TrueEndingState(player));
+                        GUIManager.getInstance().changeState(new TrueEndingState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -546,7 +547,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new TrueTrueEndingState(player));
+                        GUIManager.getInstance().changeState(new TrueTrueEndingState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -556,7 +557,7 @@ public class BattleState implements GameState {
                 new Thread(() -> {
                     try {
                         Thread.sleep(3000);
-                        GameManager.getInstance().changeState(new MapState(player));
+                        GUIManager.getInstance().changeState(new MapState(player));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }

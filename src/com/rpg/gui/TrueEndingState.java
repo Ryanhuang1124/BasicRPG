@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 

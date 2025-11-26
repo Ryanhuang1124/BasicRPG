@@ -1,4 +1,4 @@
-package com.rpg;
+package com.rpg.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +6,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * 遊戲繪圖面板
+ * ゲーム描画パネル
  */
 public class GamePanel extends JPanel {
 
@@ -18,18 +18,18 @@ public class GamePanel extends JPanel {
         setBackground(Color.WHITE);
         setFocusable(true);
 
-        // 鍵盤監聽
+        // キーボードリスナー
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                GameManager.getInstance().handleKeyPressed(e);
+                GUIManager.getInstance().handleKeyPressed(e);
                 repaint();
             }
         });
 
-        // 遊戲循環（每秒60幀）
+        // ゲームループ（毎秒60フレーム）
         gameTimer = new Timer(1000 / FPS, e -> {
-            GameManager.getInstance().update();
+            GUIManager.getInstance().update();
             repaint();
         });
         gameTimer.start();
@@ -39,16 +39,16 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // 啟用抗鋸齒
+        // アンチエイリアスを有効化
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // 繪製當前遊戲狀態
-        GameManager.getInstance().render(g);
+        // 現在のゲーム状態を描画
+        GUIManager.getInstance().render(g);
     }
 
     /**
-     * 停止遊戲循環
+     * ゲームループを停止
      */
     public void stopGame() {
         if (gameTimer != null) {

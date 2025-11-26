@@ -1,5 +1,6 @@
-package com.rpg;
+package com.rpg.gui;
 
+import com.rpg.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -91,7 +92,7 @@ public class KingRevealState implements GameState {
                 currentMessageIndex++;
             } else {
                 // 会話終了、王様との戦闘へ
-                GameManager.getInstance().changeState(new BattleState(player, king));
+                GUIManager.getInstance().changeState(new BattleState(player, king));
             }
         }
     }
