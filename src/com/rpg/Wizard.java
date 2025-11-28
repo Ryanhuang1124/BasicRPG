@@ -1,25 +1,27 @@
 package com.rpg;
 
-/**
- * 魔法使いクラス
- * プレイヤーの仲間として戦う魔法使い
- */
-public class Wizard extends Human {
-
-    private static final int WIZARD_HP = 80;
-    private static final int WIZARD_ATTACK = 15;  // 勇者より少し弱い
-
-    public Wizard() {
-        super("魔法使い", WIZARD_HP, WIZARD_ATTACK);
-    }
-
-    @Override
-    public String[] getDialogMessages(Hero hero) {
-        // 魔法使いが仲間になった後の対話
-        return new String[] {
-            "魔法使い：共に戦おう、勇者よ！",
-            "お前はもうスーパー勇者だ。",
-            "魔王を倒す力を持っている！"
-        };
-    }
+public class Wizard extends Human{
+	/*
+	 * 魔法使いクラス
+	 * 最大攻撃力は勇者の1.5倍
+	 */
+	
+	public Wizard(Hero hero) {
+		super("魔法使い", 90, (int)(hero.getMaxAttack() * 1.5));
+	}
+	
+	/*
+	 * 魔法使いの攻撃
+	 */
+	
+	public int magicAttack() {
+		int dmg = getAttack();
+		System.out.println("魔法使いは魔法で攻撃して、" + dmg + "のダメージを与えた！");
+		return dmg;
+	}
+	
+	@Override
+	public int attack() {
+		return magicAttack();
+	}
 }
