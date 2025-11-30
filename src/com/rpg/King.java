@@ -10,8 +10,8 @@ public class king extends Human{
 	
 	//勇者に使命を与える
 	
-	public void giveMisson() {
-		talk("ようこそ、勇者よ！");
-		talk("魔王を倒して、わが娘を救ってくれ！");
+	public void giveMission() {
+		talk("勇者よぉ…娘が…娘がぁぁぁ！");
+		talk("魔王を倒して、わが娘を救ってくれぇぇぇ！");
 	}
 }

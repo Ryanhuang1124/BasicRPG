@@ -12,7 +12,23 @@ public class Hero extends Human{
 	
 	public int heroAttack() {
 		int dmg = getAttack();
-		System.out.println(getName() + "は攻撃して、" + dmg + "のダメージを与えた！");
+		
+		 //戦うセリフ
+		
+		String[] attackLines = {
+				"これが俺の剣だ、覚悟しろ！",
+				"邪悪を断つ！これが俺の使命だ！",
+				"はあ！勇者の名にかけて！",
+				"光よ…俺に力を！",
+				"正義の刃よ、悪を断て！"
+		};
+		
+		//乱数で決まる
+		
+		String line = attackLines[new Random().nextInt(attackLines.length)];
+		talk(line);
+		
+		System.out.println(getName() + "は攻撃し、" + dmg + "のダメージを与えた！");
 		return dmg;
 	}
 	
