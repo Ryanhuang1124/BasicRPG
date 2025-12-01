@@ -173,4 +173,75 @@ public class Hermit extends Human {
     public boolean isDefeated() {
         return hp <= 0;
     }
+
+    /**
+     * 勇者と対話する（CUI用）
+     * @param hero 勇者
+     * @param evilKingDefeated 邪悪な王が倒されたか
+     * @return 決闘を挑むか（20%の確率）
+     */
+    public boolean talkTo(Hero hero, boolean evilKingDefeated) {
+        // 邪悪な王を倒した後
+        if (evilKingDefeated) {
+            // 20%の確率で決闘
+            if (new java.util.Random().nextInt(100) < 20) {
+                talk("...");
+                talk("また一人、権力に溺れた者が現れたか。");
+                talk("お前は邪悪な王を倒し、この国の王になった。");
+                talk("既にお前の力は私が授けたもの。");
+                talk("この事態を招いた責任は私にもある...");
+                talk("ならば...");
+                talk("私自身の手でお前を止めねばならぬ！");
+                return true;  // 決闘を挑む
+            } else {
+                talk("...");
+                talk("また一人、権力に溺れた者が現れたか。");
+                talk("お前は邪悪な王を倒し、この国の王になった。");
+                talk("だが...お前は本当に正義なのか？");
+                talk("圧倒的な力を手に入れた者は、");
+                talk("いつか必ず変わってしまう。");
+                talk("お前もいずれ...");
+                talk("かつての王と同じ道を歩むだろう。");
+                talk("...去れ、新たな王よ。");
+                return false;  // 決闘しない
+            }
+        }
+
+        // TrueHeroの場合
+        if (hero instanceof TrueHero) {
+            TrueHero trueHero = (TrueHero) hero;
+            if (trueHero.canRebirth()) {
+                // 転生可能
+                talk("また来たか、真勇者よ...");
+                talk("お前の力は既に頂点に達している。");
+                talk("だが、さらなる高みを目指すか？");
+                talk("転生すればレベルは1に戻るが、");
+                talk("能力を継承し、より強くなれるぞ。");
+            } else {
+                // レベル不足
+                talk("真実を知ってしまったか...");
+                talk("王は確かに魔王の真の主人だ。");
+                talk("彼は優秀な勇者を見つけ出し、密かに暗殺してきた。");
+                talk("お前が最初ではない...");
+                talk("もっと強くなりたければ、レベル10でまた来い。");
+            }
+            return false;
+        }
+
+        // SuperHeroの場合
+        if (hero instanceof SuperHero) {
+            talk("お前はすでに別の道を選んだ。");
+            talk("魔法使いの力を借りたお前に、");
+            talk("真勇者の資格はない。");
+            talk("己の選択を貫け。");
+            return false;
+        }
+
+        // 純粋なHeroの場合 - 転職
+        talk("よくぞここまで来た...");
+        talk("お前は独りで苦練を積み、");
+        talk("己の力のみでここまで到達した。");
+        talk("真実を知る覚悟はあるか？");
+        return false;
+    }
 }

@@ -385,9 +385,9 @@ public class BattleState implements GameState {
         int damage = player.getAttack();
 
         // 魔王戦でお姫様がいる場合、30%の確率で応援
-        if (princess != null && player instanceof SuperHero) {
+        if (princess != null && player instanceof SuperHero && enemy instanceof DemonKing) {
             if (new java.util.Random().nextInt(100) < 30) {
-                int cheerMultiplier = princess.cheer(player);
+                int cheerMultiplier = princess.getCheerBoost((Enemy)enemy);
                 damage *= cheerMultiplier;
                 message = princess.getName() + "が応援した！\n" +
                           player.getName() + "の攻撃力が" + cheerMultiplier + "倍になった！\n" +

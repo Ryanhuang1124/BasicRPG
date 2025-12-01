@@ -10,6 +10,34 @@ public class Princess extends Human {
         super("お姫様", 80, 50);  // 王様の味方として戦う時の攻撃力50
     }
 
+    /**
+     * 勇者と対話する（CUI用）
+     * 魔王撃破後の通常エンディング対話
+     * @param hero 勇者
+     */
+    public void talkTo(Hero hero) {
+        talk("勇者様...");
+        talk("あなたが魔王を倒してくれたのですね。");
+        talk("本当にありがとうございます！");
+        talk("あなたは真の英雄です！");
+    }
+
+
+    //お姫様がスーパー勇者に応援する
+	//応援できるのは、スーパー勇者が魔王と戦っている時だけ
+	
+	public int getCheerBoost(Enemy enemy) {
+		if(enemy instanceof DemonKing) {
+			talk("スーパー勇者様！が、頑張ってくださいましいいいっ！（大声）");
+			talk("もし魔王を倒したら、特別のご褒美、あ．げ．る♡");
+			
+			 //スーパー勇者の攻撃力が2倍にする
+			
+			return 2;
+		}
+		return 1;
+	}
+
     @Override
     public String[] getDialogMessages(Hero hero) {
         // 王様を倒した後は姫は消える（TrueEndingに移行済み）
@@ -30,21 +58,6 @@ public class Princess extends Human {
             "",
             "(隠しルートもあるよ！)"
         };
-    }
-
-    /**
-     * スーパー勇者を応援する（魔王戦のみ）
-     * 応援するとスーパー勇者の攻撃力が2倍になる
-     * @param hero スーパー勇者
-     * @return 応援による攻撃力ブースト倍率
-     */
-    public int cheer(Hero hero) {
-        if (hero instanceof SuperHero) {
-            System.out.println("お姫様：頑張って、勇者様！");
-            System.out.println("お姫様の応援で攻撃力が2倍になった！");
-            return 2;  // 攻撃力2倍
-        }
-        return 1;  // 応援なし
     }
 
     /**

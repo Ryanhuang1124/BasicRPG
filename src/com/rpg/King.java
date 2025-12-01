@@ -34,7 +34,7 @@ public class King extends Human {
             return new String[] {
                 "王様：よく来た、勇者よ！",
                 "我が国は魔物に苦しめられている。",
-                "草原に出て魔物を倒し、\n経験を積んでくれないか？",
+                "冒険に出て魔物を倒し、\n経験を積んでくれないか？",
                 "十分に強くなったら、\n魔法使いのところへ行きなさい。",
                 "きっと力になってくれるだろう。"
             };
@@ -72,5 +72,32 @@ public class King extends Human {
      */
     public boolean isIdentityRevealed() {
         return identityRevealed;
+    }
+
+
+    /**
+     * 勇者と対話する（CUI用）
+     * @param hero 勇者
+     */
+    public void talkTo(Hero hero) {
+        // TrueHeroで正体を知っている場合
+        if (hero instanceof TrueHero && !identityRevealed) {
+            talk("よく来た、勇者よ。");
+            talk("魔王を倒したそうだな。流石だ...");
+        }
+        // すでに正体をバラした後
+        else if (identityRevealed) {
+            talk("ふん、まだ生きていたか...");
+            talk("お前のような優秀な勇者は危険すぎる。");
+            talk("ここで消えてもらおう！");
+        }
+        // 通常の対話
+        else {
+            talk("よく来た、勇者よ！");
+            talk("我が国は魔物に苦しめられている。");
+            talk("冒険に出て魔物を倒し、経験を積んでくれないか？");
+            talk("十分に強くなったら、魔法使いのところへ行きなさい。");
+            talk("きっと力になってくれるだろう。");
+        }
     }
 }

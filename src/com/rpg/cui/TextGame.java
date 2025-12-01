@@ -96,7 +96,7 @@ public class TextGame {
             System.out.println(optionNum++ + ". 隠士に会いに行く");
         }
 
-        System.out.println(optionNum++ + ". 草地を探索する");
+        System.out.println(optionNum++ + ". 冒険に出る");
         System.out.println(optionNum++ + ". 休憩する（HP回復）");
         System.out.println("0. ゲーム終了");
         System.out.println();
@@ -149,7 +149,7 @@ public class TextGame {
             }
         }
 
-        // 草地探索
+        // 冒険に出る
         if (choice == optionNum++) {
             exploreGrassland();
             return;
@@ -173,49 +173,36 @@ public class TextGame {
         System.out.println("═══════════ 魔法使いの家 ═══════════");
         System.out.println();
 
-        // 3種類の敵を倒していない場合
-        if (!player.hasDefeatedAllBasicEnemies()) {
-            showDialog("魔法使い", new String[] {
-                "ようこそ、若き勇者よ。",
-                "だが、お前にはまだ早い...",
-                "スライム、ゴブリン、狼男。",
-                "この3種類の魔物を全て倒してからまた来るがよい。"
-            });
-            return;
-        }
+        Wizard wizard;
 
-        // すでに仲間になっている場合
+        // すでに仲間になっている場合は、仲間のWizardと対話
         if (wizardJoined) {
-            showDialog("魔法使い", new String[] {
-                "共に戦おう、勇者よ！",
-                "お前はもうスーパー勇者だ。",
-                "魔王を倒す力を持っている！"
-            });
-            return;
+            wizard = player.getWizard();
+        } else {
+            wizard = new Wizard();  // 対話用の一時オブジェクト
         }
 
-        // 条件達成 - 必ず仲間になる（確率なし）
-        wizardJoined = true;
-        player.setWizard(new Wizard());
+        // 対話を実行
+        wizard.talkTo(player, wizardJoined);
 
-        // スーパー勇者に転職
-        SuperHero superHero = new SuperHero(player);
-        GameManager.getInstance().setPlayer(superHero);
-        player = superHero;
+        // 条件達成かつ未加入の場合、仲間に加入
+        if (!wizardJoined && player.hasDefeatedAllBasicEnemies()) {
+            wizardJoined = true;
+            Wizard newWizard = new Wizard(player);  // 勇者の攻撃力×1.5
+            player.setWizard(newWizard);
 
-        showDialog("魔法使い", new String[] {
-            "ようこそ、若き勇者よ。",
-            "見事だ！3種類の魔物を倒したか。",
-            "お前には不思議な力を感じる...",
-            "よかろう、お前の冒険に同行しよう！",
-            "私の力で、お前をスーパー勇者に変身させてやろう！"
-        });
+            // スーパー勇者に転職
+            SuperHero superHero = new SuperHero(player);
+            GameManager.getInstance().setPlayer(superHero);
+            player = superHero;
 
-        System.out.println();
-        System.out.println("★ 魔法使いが仲間になった！");
-        System.out.println("★ スーパー勇者に変身した！");
-        System.out.println("★ 攻撃力が2倍になった！");
-        System.out.println("★ 飛行能力を獲得した！");
+            System.out.println();
+            System.out.println("★ 魔法使いが仲間になった！");
+            System.out.println("★ スーパー勇者に変身した！");
+            System.out.println("★ 攻撃力が2倍になった！");
+            System.out.println("★ 飛行能力を獲得した！");
+        }
+
         waitForEnter();
     }
 
@@ -229,13 +216,11 @@ public class TextGame {
 
         King king = new King();
 
-        // TrueHeroで正体を暴く選択
-        if (player instanceof TrueHero) {
-            showDialog("王様", new String[] {
-                "よく来た、勇者よ。",
-                "魔王を倒したそうだな。流石だ..."
-            });
+        // 対話を実行
+        king.talkTo(player);
 
+        // TrueHeroで正体を暴く選択
+        if (player instanceof TrueHero && !king.isIdentityRevealed()) {
             System.out.println();
             System.out.println("（真実を告げますか？）");
             System.out.println("1. はい");
@@ -244,9 +229,12 @@ public class TextGame {
 
             int choice = readInt();
             if (choice == 1) {
+                System.out.println();
                 // 正体暴露
                 String[] revealMessages = king.revealIdentity();
-                showDialog("王様", revealMessages);
+                for (String msg : revealMessages) {
+                    System.out.println(msg);
+                }
 
                 System.out.println();
                 System.out.println("邪悪な王との戦いが始まる！");
@@ -254,18 +242,11 @@ public class TextGame {
 
                 // 王様と戦闘（お姫様も登場）
                 battle(king, true);
+                return;
             }
-            return;
         }
 
-        // 通常の対話
-        showDialog("王様", new String[] {
-            "よく来た、勇者よ！",
-            "我が国は魔物に苦しめられている。",
-            "草原に出て魔物を倒し、経験を積んでくれないか？",
-            "十分に強くなったら、魔法使いのところへ行きなさい。",
-            "きっと力になってくれるだろう。"
-        });
+        waitForEnter();
     }
 
     /**
@@ -276,12 +257,10 @@ public class TextGame {
         System.out.println("═══════════ 王城 ═══════════");
         System.out.println();
 
-        showDialog("お姫様", new String[] {
-            "勇者様...",
-            "あなたが魔王を倒してくれたのですね。",
-            "本当にありがとうございます！",
-            "あなたは真の英雄です！"
-        });
+        Princess princess = new Princess();
+
+        // 対話を実行
+        princess.talkTo(player);
 
         // 通常エンディング
         showNormalEnding();
@@ -296,55 +275,30 @@ public class TextGame {
         System.out.println();
 
         Hermit hermit = new Hermit();
+        boolean evilKingDefeated = GameManager.getInstance().isEvilKingDefeated();
 
-        // 邪悪な王を倒した後
-        if (GameManager.getInstance().isEvilKingDefeated()) {
-            // 20%の確率で決闘
-            if (random.nextInt(100) < 20) {
-                showDialog("隠士", new String[] {
-                    "...",
-                    "また一人、権力に溺れた者が現れたか。",
-                    "お前は邪悪な王を倒し、この国の王になった。",
-                    "既にお前の力は私が授けたもの。",
-                    "この事態を招いた責任は私にもある...",
-                    "ならば...",
-                    "私自身の手でお前を止めねばならぬ！"
-                });
+        // 対話を実行
+        boolean shouldBattle = hermit.talkTo(player, evilKingDefeated);
 
-                System.out.println();
-                System.out.println("隠士が決闘を仕掛けてきた！");
-                waitForEnter();
-
-                battle(hermit, false);
-            } else {
-                showDialog("隠士", new String[] {
-                    "...",
-                    "また一人、権力に溺れた者が現れたか。",
-                    "お前は邪悪な王を倒し、この国の王になった。",
-                    "だが...お前は本当に正義なのか？",
-                    "圧倒的な力を手に入れた者は、",
-                    "いつか必ず変わってしまう。",
-                    "お前もいずれ...",
-                    "かつての王と同じ道を歩むだろう。",
-                    "...去れ、新たな王よ。"
-                });
-            }
+        // 邪悪な王を倒した後、決闘になる場合
+        if (shouldBattle) {
+            System.out.println();
+            System.out.println("隠士が決闘を仕掛けてきた！");
+            waitForEnter();
+            battle(hermit, false);
             return;
         }
 
-        // TrueHeroの場合
+        // 邪悪な王撃破後の場合、対話のみで終了
+        if (evilKingDefeated) {
+            waitForEnter();
+            return;
+        }
+
+        // TrueHeroで転生可能な場合
         if (player instanceof TrueHero) {
             TrueHero trueHero = (TrueHero) player;
             if (trueHero.canRebirth()) {
-                // 転生可能
-                showDialog("隠士", new String[] {
-                    "また来たか、真勇者よ...",
-                    "お前の力は既に頂点に達している。",
-                    "だが、さらなる高みを目指すか？",
-                    "転生すればレベルは1に戻るが、",
-                    "能力を継承し、より強くなれるぞ。"
-                });
-
                 System.out.println();
                 System.out.println("（転生しますか？）");
                 System.out.println("1. はい");
@@ -358,46 +312,27 @@ public class TextGame {
                     player = reborn;
 
                     String[] rebirthMessages = hermit.getRebirthMessages(reborn.getRebirthCount());
-                    showDialog("隠士", rebirthMessages);
+                    for (String msg : rebirthMessages) {
+                        System.out.println("隠士：" + msg);
+                    }
 
                     System.out.println();
                     System.out.println("★ 転生完了！");
                     System.out.println("★ レベルが1にリセットされた！");
                     System.out.println("★ 能力を継承してさらに強くなれる！");
-                    waitForEnter();
                 }
-            } else {
-                // レベル不足
-                showDialog("隠士", new String[] {
-                    "真実を知ってしまったか...",
-                    "王は確かに魔王の真の主人だ。",
-                    "彼は優秀な勇者を見つけ出し、密かに暗殺してきた。",
-                    "お前が最初ではない...",
-                    "もっと強くなりたければ、レベル10でまた来い。"
-                });
             }
+            waitForEnter();
             return;
         }
 
-        // SuperHeroの場合
+        // SuperHeroの場合、対話のみ
         if (player instanceof SuperHero) {
-            showDialog("隠士", new String[] {
-                "お前はすでに別の道を選んだ。",
-                "魔法使いの力を借りたお前に、",
-                "真勇者の資格はない。",
-                "己の選択を貫け。"
-            });
+            waitForEnter();
             return;
         }
 
         // 純粋なHeroの場合 - 転職
-        showDialog("隠士", new String[] {
-            "よくぞここまで来た...",
-            "お前は独りで苦練を積み、",
-            "己の力のみでここまで到達した。",
-            "真実を知る覚悟はあるか？"
-        });
-
         System.out.println();
         System.out.println("（転職しますか？）");
         System.out.println("1. はい");
@@ -411,29 +346,40 @@ public class TextGame {
             player = trueHero;
 
             String[] jobChangeMessages = hermit.getJobChangeMessages();
-            showDialog("隠士", jobChangeMessages);
+            for (String msg : jobChangeMessages) {
+                System.out.println("隠士：" + msg);
+            }
 
             System.out.println();
             System.out.println("★ 真勇者に転職した！");
             System.out.println("★ レベルが1にリセットされた！");
             System.out.println("★ パッシブ能力：レベル毎に能力10%上昇（複利）");
-            waitForEnter();
         }
+
+        waitForEnter();
     }
 
     /**
-     * 草地を探索する
+     * 冒険に出る
      */
     private void exploreGrassland() {
         clearScreen();
-        System.out.println("═══════════ 草地探索 ═══════════");
+        System.out.println("═══════════ 冒険 ═══════════");
         System.out.println();
-        System.out.println("草地を探索している...");
+        System.out.println("冒険に出かけた...");
         System.out.println();
 
-        // 30%の確率で敵と遭遇
-        if (random.nextInt(100) < 30) {
-            Enemy enemy = EnemyFactory.createRandomEnemy();
+        // 70%の確率で敵と遭遇
+        if (random.nextInt(100) < 70) {
+            Enemy enemy;
+
+            // SuperHeroの場合、魔王も出現する可能性あり
+            if (player instanceof SuperHero) {
+                enemy = EnemyFactory.createRandomEnemyForSuper();
+            } else {
+                enemy = EnemyFactory.createRandomEnemy();
+            }
+
             System.out.println("野生の" + enemy.getName() + "が現れた！");
             waitForEnter();
             battle(enemy, false);
@@ -549,7 +495,7 @@ public class TextGame {
                 // 魔王戦でお姫様が応援（SuperHeroのみ、30%）
                 if (princess != null && enemy instanceof DemonKing && player instanceof SuperHero) {
                     if (random.nextInt(100) < 30) {
-                        int multiplier = princess.cheer(player);
+                        int multiplier = princess.getCheerBoost((Enemy)enemy);  // 敵を渡す
                         damage *= multiplier;
                         System.out.println("お姫様：頑張って、勇者様！");
                         System.out.println("お姫様の応援で攻撃力が" + multiplier + "倍になった！");
@@ -564,22 +510,6 @@ public class TextGame {
                     handleEnemyDefeated(enemy);
                     battleRunning = false;
                     continue;
-                }
-
-                // 魔法使いの攻撃
-                if (player.hasWizard()) {
-                    Wizard wizard = player.getWizard();
-                    int wizardDamage = wizard.getAttack();
-                    enemy.takeDamage(wizardDamage);
-                    System.out.println();
-                    System.out.println(wizard.getName() + "の攻撃！");
-                    System.out.println(wizardDamage + "のダメージを与えた！");
-
-                    if (!enemy.isAlive()) {
-                        handleEnemyDefeated(enemy);
-                        battleRunning = false;
-                        continue;
-                    }
                 }
             }
             // 眠る
@@ -610,6 +540,45 @@ public class TextGame {
                 System.out.println("無効な選択です。");
                 waitForEnter();
                 continue;
+            }
+
+            // 魔法使いのターン（プレイヤーが逃げなかった場合）
+            if (player.hasWizard() && enemy.isAlive()) {
+                Wizard wizard = player.getWizard();
+                System.out.println();
+                System.out.println("────────────────────────────");
+                System.out.println("魔法使いのターン！");
+                System.out.println("1. 魔法攻撃");
+                System.out.println("2. エクスプロージョン（必殺技）");
+                System.out.print("> ");
+
+                int wizardChoice = readInt();
+                System.out.println();
+
+                if (wizardChoice == 1) {
+                    // 通常の魔法攻撃
+                    int wizardDamage = wizard.getAttack();
+                    enemy.takeDamage(wizardDamage);
+                } else if (wizardChoice == 2) {
+                    // 必殺技エクスプロージョン
+                    if (enemy instanceof Enemy) {
+                        wizard.superExplosion((Enemy)enemy);
+                    } else {
+                        System.out.println("この敵には必殺技が使えない！");
+                        int wizardDamage = wizard.getAttack();
+                        enemy.takeDamage(wizardDamage);
+                    }
+                } else {
+                    System.out.println("無効な選択です。通常攻撃を行います。");
+                    int wizardDamage = wizard.getAttack();
+                    enemy.takeDamage(wizardDamage);
+                }
+
+                if (!enemy.isAlive()) {
+                    handleEnemyDefeated(enemy);
+                    battleRunning = false;
+                    continue;
+                }
             }
 
             // 敵の反撃

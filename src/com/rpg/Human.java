@@ -11,6 +11,10 @@ public abstract class Human extends Character {
         super(name, maxHp, maxAttack);
     }
 
+    public void talk(String message) {
+		System.out.println(getName() + "：「" + message + "」");
+	}
+
     /**
      * 対話メッセージを取得する
      * サブクラスでオーバーライドして固有の対話を実装

@@ -516,7 +516,6 @@ Lv10到達: HP 234, 攻撃力 47 (1.1^9 ≈ 2.36倍)
 
 ### コンパイル（両バージョン共通）
 ```bash
-cd "C:\Users\ko8516\Desktop\VSCode Projects\BasicRPG"
 javac -encoding UTF-8 -d bin src/com/rpg/*.java src/com/rpg/gui/*.java src/com/rpg/cui/*.java
 ```
 
