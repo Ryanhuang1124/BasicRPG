@@ -32,9 +32,23 @@ public class MapState implements GameState {
     private boolean wizardJoined = false;      // 魔法使いが仲間になったか
     private boolean hasMetWizard = false;      // 魔法使いに会ったことがあるか
 
+    // セーブ画面表示フラグ
+    private boolean showSaveDialog = false;
+    private int selectedSaveSlot = 0;
+
     public MapState(Hero player) {
         this.player = player;
         initMap();
+    }
+
+    /**
+     * 魔法使いが仲間になったかを設定（ロード時に使用）
+     */
+    public void setWizardJoined(boolean joined) {
+        this.wizardJoined = joined;
+        if (joined && player.getWizard() == null) {
+            player.setWizard(new Wizard());
+        }
     }
 
     /**
@@ -60,7 +74,7 @@ public class MapState implements GameState {
         // NPC位置をマーク
         map[WIZARD_Y][WIZARD_X] = 2;
         map[KING_Y][KING_X] = 2;
-        // お姫様は魔王撃破後のみ出現するため、初期状態では配置しない
+        // お姫様は魔王撃破後のみ現れるため、初期状態では配置しない
     }
 
     @Override
@@ -146,6 +160,99 @@ public class MapState implements GameState {
             g.setColor(Color.BLACK);
             g.drawString("Eキーで話しかける", 310, MAP_HEIGHT * TILE_SIZE + 60);
         }
+
+        // セーブヒント表示
+        g.setColor(Color.GRAY);
+        g.setFont(new Font("MS Gothic", Font.PLAIN, 14));
+        g.drawString("Sキーでセーブ", 700, MAP_HEIGHT * TILE_SIZE + 110);
+
+        // セーブダイアログを描画
+        if (showSaveDialog) {
+            renderSaveDialog(g);
+        }
+    }
+
+    /**
+     * セーブダイアログを描画
+     */
+    private void renderSaveDialog(Graphics g) {
+        // 半透明の背景
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(0, 0, 800, 650);
+
+        // ダイアログボックス
+        g.setColor(new Color(50, 50, 80));
+        g.fillRect(200, 150, 400, 300);
+        g.setColor(Color.WHITE);
+        g.drawRect(200, 150, 400, 300);
+
+        // タイトル
+        g.setFont(new Font("MS Gothic", Font.BOLD, 24));
+        g.drawString("セーブ", 360, 190);
+
+        // スロット一覧
+        SaveManager sm = SaveManager.getInstance();
+        g.setFont(new Font("MS Gothic", Font.PLAIN, 18));
+        int slotY = 240;
+        int slotSpacing = 50;
+
+        for (int i = 0; i < sm.getMaxSlots(); i++) {
+            // 選択中のスロットをハイライト
+            if (selectedSaveSlot == i) {
+                g.setColor(new Color(80, 80, 120));
+                g.fillRect(220, slotY - 20, 360, 35);
+                g.setColor(Color.YELLOW);
+                g.drawString("▶", 225, slotY);
+            } else {
+                g.setColor(Color.WHITE);
+            }
+            g.drawString("スロット " + (i + 1) + ": " + sm.getSlotSummary(i + 1), 250, slotY);
+            slotY += slotSpacing;
+        }
+
+        // キャンセルオプション
+        if (selectedSaveSlot == sm.getMaxSlots()) {
+            g.setColor(Color.YELLOW);
+            g.drawString("▶", 225, slotY);
+        } else {
+            g.setColor(Color.WHITE);
+        }
+        g.drawString("キャンセル", 250, slotY);
+
+        // 操作説明
+        g.setColor(Color.GRAY);
+        g.setFont(new Font("MS Gothic", Font.PLAIN, 14));
+        g.drawString("↑↓: 選択  Enter: 決定  Esc: キャンセル", 250, 430);
+    }
+
+    /**
+     * セーブダイアログの入力処理
+     */
+    private void handleSaveDialogInput(KeyEvent e) {
+        SaveManager sm = SaveManager.getInstance();
+        int maxOption = sm.getMaxSlots();  // キャンセル含む
+
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+                selectedSaveSlot = Math.max(0, selectedSaveSlot - 1);
+                break;
+            case KeyEvent.VK_DOWN:
+                selectedSaveSlot = Math.min(maxOption, selectedSaveSlot + 1);
+                break;
+            case KeyEvent.VK_ENTER:
+                if (selectedSaveSlot == maxOption) {
+                    // キャンセル
+                    showSaveDialog = false;
+                } else {
+                    // セーブ実行
+                    sm.save(selectedSaveSlot + 1, player, wizardJoined);
+                    showSaveDialog = false;
+                }
+                break;
+            case KeyEvent.VK_ESCAPE:
+                showSaveDialog = false;
+                break;
+        }
     }
 
     /**
@@ -207,31 +314,40 @@ public class MapState implements GameState {
 
     @Override
     public void handleKeyPressed(KeyEvent e) {
+        // セーブダイアログ表示中の処理
+        if (showSaveDialog) {
+            handleSaveDialogInput(e);
+            return;
+        }
+
         // Eキーで対話
         if (e.getKeyCode() == KeyEvent.VK_E) {
             tryTalkToNPC();
             return;
         }
 
+        // Sキーでセーブ
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            showSaveDialog = true;
+            selectedSaveSlot = 0;
+            return;
+        }
+
         int oldX = player.getX();
         int oldY = player.getY();
 
-        // 方向キーの処理
+        // 方向キーの処理（WASDを削除、方向キーのみ）
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-            case KeyEvent.VK_W:
                 player.move(0, -1);
                 break;
             case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_S:
                 player.move(0, 1);
                 break;
             case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_A:
                 player.move(-1, 0);
                 break;
             case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_D:
                 player.move(1, 0);
                 break;
         }
@@ -265,7 +381,13 @@ public class MapState implements GameState {
         if (map[player.getY()][player.getX()] == 1) {
             // 草地上で、敵遭遇の判定
             if (random.nextInt(100) < 30) {  // 30% の確率で遭遇
-                Enemy enemy = EnemyFactory.createRandomEnemy();
+                Enemy enemy;
+                // 魔王現れる条件: SuperHero または TrueHero または Lv10以上
+                if (player instanceof SuperHero || player instanceof TrueHero || player.getLevel() >= 10) {
+                    enemy = EnemyFactory.createRandomEnemyForSuper();
+                } else {
+                    enemy = EnemyFactory.createRandomEnemy();
+                }
                 System.out.println(enemy.getName() + "と遭遇した！");
                 // 戦闘状態に切り替え
                 GUIManager.getInstance().changeState(new BattleState(player, enemy));
@@ -282,6 +404,17 @@ public class MapState implements GameState {
 
         // 魔法使との対話
         if (isAdjacentTo(px, py, WIZARD_X, WIZARD_Y)) {
+            // TrueHeroの場合、仲間にならない（別ルート選択済み）
+            if (player instanceof TrueHero) {
+                String[] messages = {
+                    "魔法使い：ほう...お前は別の道を選んだか。",
+                    "真勇者よ、お前に私の力は不要だ。",
+                    "己の力を信じて進め。"
+                };
+                GUIManager.getInstance().changeState(new DialogState(player, "魔法使い", messages));
+                return;
+            }
+
             // 3種類の敵を全て倒していない場合
             if (!player.hasDefeatedAllBasicEnemies()) {
                 String[] messages = {

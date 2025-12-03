@@ -9,8 +9,8 @@ package com.rpg;
 public class TrueHero extends Hero {
 
     private int rebirthCount;  // 転生回数
-    private double baseMaxHp;   // 基礎最大HP（転生時に継承）
-    private double baseMaxAttack;  // 基礎攻撃力（転生時に継承）
+    private int baseMaxHp;     // 基礎最大HP（転生時に継承）
+    private int baseMaxAttack; // 基礎攻撃力（転生時に継承）
 
     /**
      * 既存のHeroからTrueHeroに転職（初回転職）
@@ -21,7 +21,7 @@ public class TrueHero extends Hero {
 
         // 初回転職: 能力を継承してレベル1にリセット
         this.rebirthCount = 0;
-        this.baseMaxHp = source.getMaxHp();      // 現在の最大HP継承（100）
+        this.baseMaxHp = source.getMaxHp();       // 現在の最大HP継承（100）
         this.baseMaxAttack = source.getMaxAttack(); // 現在の攻撃力継承（20）
 
         // レベル1にリセット
@@ -35,7 +35,7 @@ public class TrueHero extends Hero {
 
         System.out.println(name + "は真勇者に転職した！");
         System.out.println("レベルが1にリセットされた！");
-        System.out.println("基礎攻撃力: " + (int)baseMaxAttack + ", 基礎HP: " + (int)baseMaxHp + " を継承！");
+        System.out.println("基礎攻撃力: " + baseMaxAttack + ", 基礎HP: " + baseMaxHp + " を継承！");
         System.out.println("パッシブ能力獲得: レベル毎に能力10%上昇（複利）");
     }
 
@@ -48,7 +48,7 @@ public class TrueHero extends Hero {
 
         // 転生: 現在の能力を継承してレベル1にリセット
         this.rebirthCount = source.rebirthCount + 1;
-        this.baseMaxHp = source.getMaxHp();      // 成長した最大HP継承
+        this.baseMaxHp = source.getMaxHp();       // 成長した最大HP継承
         this.baseMaxAttack = source.getMaxAttack(); // 成長した攻撃力継承
 
         // レベル1にリセット
@@ -62,8 +62,25 @@ public class TrueHero extends Hero {
 
         System.out.println(name + "は" + (rebirthCount + 1) + "回目の転生を行った！");
         System.out.println("レベルが1にリセットされた！");
-        System.out.println("基礎攻撃力: " + (int)baseMaxAttack + ", 基礎HP: " + (int)baseMaxHp + " を継承！");
+        System.out.println("基礎攻撃力: " + baseMaxAttack + ", 基礎HP: " + baseMaxHp + " を継承！");
         System.out.println("さらに強くなる道が開けた！");
+    }
+
+    /**
+     * セーブデータから復元するためのコンストラクタ
+     * メッセージを出力しない静かな復元
+     * @param source 基底Hero
+     * @param rebirthCount 転生回数
+     * @param baseMaxHp 基礎最大HP
+     * @param baseMaxAttack 基礎攻撃力
+     * @param silent trueの場合メッセージを出力しない
+     */
+    public TrueHero(Hero source, int rebirthCount, int baseMaxHp, int baseMaxAttack, boolean silent) {
+        super(source);
+        this.rebirthCount = rebirthCount;
+        this.baseMaxHp = baseMaxHp;
+        this.baseMaxAttack = baseMaxAttack;
+        // 能力値は呼び出し側で設定済みなので再計算しない
     }
 
     /**
@@ -84,6 +101,10 @@ public class TrueHero extends Hero {
         boolean leveledUp = super.gainExp(amount);
         // レベルアップ後、能力値を再計算
         recalculateStats();
+        // レベルアップ時は新しいmaxHpで全回復
+        if (leveledUp) {
+            hp = maxHp;
+        }
         return leveledUp;
     }
 
@@ -107,7 +128,7 @@ public class TrueHero extends Hero {
      * 基礎攻撃力を取得
      * @return 基礎攻撃力
      */
-    public double getBaseMaxAttack() {
+    public int getBaseMaxAttack() {
         return baseMaxAttack;
     }
 
@@ -115,24 +136,24 @@ public class TrueHero extends Hero {
      * 基礎最大HPを取得
      * @return 基礎最大HP
      */
-    public double getBaseMaxHp() {
+    public int getBaseMaxHp() {
         return baseMaxHp;
     }
 
     /**
-     * 真勇者は眠ることができない
+     * 眠ることができるかチェック（戦闘中）
+     * @return 真勇者は戦闘中は眠れないのでfalse
      */
     @Override
-    public void sleep() {
-        // 真勇者は眠れない（何もしない）
+    public boolean canSleep() {
+        return false;  // 戦闘中は眠れない（BattleStateで使用）
     }
 
     /**
-     * 眠ることができるかチェック
-     * @return 真勇者は眠れないのでfalse
+     * 眠る - HPを100%に回復する（非戦闘時のみ使用可能）
      */
-    public boolean canSleep() {
-        return false;
+    public void restAtInn() {
+        this.hp = this.maxHp;
     }
 
     @Override

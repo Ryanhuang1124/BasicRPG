@@ -57,7 +57,7 @@ public class King extends Human {
             "お姫様を攫わせたのも、\n魔物を放ったのも、",
             "すべては優秀な勇者を\n見つけ出すためだ！",
             "そして強くなった勇者を...",
-            "密かに暗殺してきた！",
+            "魔王を使って始末してきた！",
             "お前で17人目だ。",
             "だが...お前は特別だ。",
             "転生を繰り返す力を持つとはな...",
@@ -74,6 +74,14 @@ public class King extends Human {
         return identityRevealed;
     }
 
+
+    /**
+     * 攻撃方法の名前を取得
+     * @return 攻撃方法の説明
+     */
+    public String getAttackName() {
+        return "絶対王権を振りかざした";
+    }
 
     /**
      * 勇者と対話する（CUI用）

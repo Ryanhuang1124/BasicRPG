@@ -29,17 +29,14 @@ public class GameWindow extends JFrame {
 
     /**
      * ゲームを初期化する
-     * プレイヤーを作成し、初期状態を設定
+     * タイトル画面から開始
      */
     private void initGame() {
-        // プレイヤーを作成
-        Hero player = new Hero("勇者");
+        // GameManagerをリセット
+        GameManager.getInstance().reset();
 
-        // プレイヤーをGameManagerに登録
-        GameManager.getInstance().setPlayer(player);
-
-        // 初期状態をマップ探索に設定
-        GUIManager.getInstance().changeState(new MapState(player));
+        // タイトル画面から開始
+        GUIManager.getInstance().changeState(new TitleState());
     }
 
     public static void main(String[] args) {

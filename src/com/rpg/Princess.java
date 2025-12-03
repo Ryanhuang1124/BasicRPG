@@ -12,14 +12,27 @@ public class Princess extends Human {
 
     /**
      * 勇者と対話する（CUI用）
-     * 魔王撃破後の通常エンディング対話
+     * 魔王撃破後の対話
      * @param hero 勇者
+     * @return 通常エンディングを表示するか
      */
-    public void talkTo(Hero hero) {
+    public boolean talkTo(Hero hero) {
+        // 邪悪な王撃破後（洗脳解除、父を失った悲しみ）
+        if (GameManager.getInstance().isEvilKingDefeated()) {
+            talk("お父様...");
+            return false;
+        }
+        // TrueHeroの場合、通常エンディングを表示しない（洗脳されているため無言）
+        if (hero instanceof TrueHero) {
+            talk("...");
+            return false;
+        }
+        // SuperHeroの場合、通常エンディング
         talk("勇者様...");
         talk("あなたが魔王を倒してくれたのですね。");
         talk("本当にありがとうございます！");
         talk("あなたは真の英雄です！");
+        return true;
     }
 
 
@@ -40,8 +53,19 @@ public class Princess extends Human {
 
     @Override
     public String[] getDialogMessages(Hero hero) {
-        // 王様を倒した後は姫は消える（TrueEndingに移行済み）
-        // 通常エンディング（魔王のみ倒した場合）
+        // 邪悪な王撃破後（洗脳解除、父を失った悲しみ）
+        if (GameManager.getInstance().isEvilKingDefeated()) {
+            return new String[] {
+                "お姫様：お父様..."
+            };
+        }
+        // TrueHeroの場合、通常エンディングを表示しない（洗脳されているため無言）
+        if (hero instanceof TrueHero) {
+            return new String[] {
+                "お姫様：..."
+            };
+        }
+        // 通常エンディング（SuperHeroで魔王を倒した場合）
         return new String[] {
             "お姫様：勇者様...",
             "あなたが魔王を倒してくれたのですね。",

@@ -20,4 +20,10 @@ public abstract class Enemy extends Character {
     public int getExpReward() {
         return expReward;
     }
+
+    /**
+     * 攻撃方法の名前を取得（サブクラスで実装）
+     * @return 攻撃方法の説明
+     */
+    public abstract String getAttackName();
 }

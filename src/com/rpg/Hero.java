@@ -18,7 +18,7 @@ public class Hero extends Human {
     protected int expToNextLevel;  // 次のレベルまでに必要な経験値
 
     public Hero(String name) {
-        super(name, 100, 20);  // HP: 100, 攻撃力: 20
+        super(name, 100, 15);  // HP: 100, 攻撃力: 15
         this.x = 8;  // 初期位置（15x12マップ）
         this.y = 1;
         this.defeatedEnemies = new HashSet<>();

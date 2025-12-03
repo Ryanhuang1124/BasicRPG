@@ -589,9 +589,9 @@ public class BattleState implements GameState {
                 damage *= supportMultiplier;
                 message = princess.getDespairMessage() + "\n" +
                           "洗脳されたお姫様の応援で王様の攻撃力が" + supportMultiplier + "倍に！\n" +
-                          enemy.getName() + "の反撃！\n" + damage + "のダメージを受けた！";
+                          enemy.getName() + "は" + ((King)enemy).getAttackName() + "！\n" + damage + "のダメージを受けた！";
             } else {
-                message = enemy.getName() + "の反撃！\n" + damage + "のダメージを受けた！";
+                message = enemy.getName() + "は" + ((King)enemy).getAttackName() + "！\n" + damage + "のダメージを受けた！";
             }
         }
 
@@ -606,7 +606,8 @@ public class BattleState implements GameState {
             Wizard wizard = player.getWizard();
             wizard.takeDamage(damage);
             if (!(enemy instanceof King && ((King)enemy).isIdentityRevealed())) {
-                message = enemy.getName() + "の反撃！\n" +
+                String attackName = (enemy instanceof Enemy) ? ((Enemy)enemy).getAttackName() : ((King)enemy).getAttackName();
+                message = enemy.getName() + "は" + attackName + "！\n" +
                           wizard.getName() + "に" + damage + "のダメージ！";
             } else {
                 message += "\n" + wizard.getName() + "に" + damage + "のダメージ！";
@@ -625,7 +626,8 @@ public class BattleState implements GameState {
                 player.takeDamage(damage);
             }
             if (!(enemy instanceof King && ((King)enemy).isIdentityRevealed())) {
-                message = enemy.getName() + "の反撃！\n" + damage + "のダメージを受けた！";
+                String attackName = (enemy instanceof Enemy) ? ((Enemy)enemy).getAttackName() : ((King)enemy).getAttackName();
+                message = enemy.getName() + "は" + attackName + "！\n" + damage + "のダメージを受けた！";
             }
 
             if (!player.isAlive()) {

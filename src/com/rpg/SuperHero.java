@@ -16,7 +16,7 @@ public class SuperHero extends Hero {
      */
     public SuperHero(Hero source) {
         super(source);  // 状態をコピー
-        this.maxAttack = 40;  // 攻撃力を2倍にする
+        this.maxAttack = 30;  // 攻撃力を2倍にする
         this.isFlying = false;
         System.out.println(name + "はスーパー勇者になった！");
         System.out.println("攻撃力が2倍になった！");

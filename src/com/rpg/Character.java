@@ -88,4 +88,17 @@ public abstract class Character {
     public int getMaxAttack() {
         return maxAttack;
     }
+
+    // セッター（セーブデータ復元用）
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    public void setMaxAttack(int maxAttack) {
+        this.maxAttack = maxAttack;
+    }
 }

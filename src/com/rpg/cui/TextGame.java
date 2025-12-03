@@ -25,25 +25,140 @@ public class TextGame {
      * ゲームを開始する
      */
     public void start() {
-        showTitle();
-        initGame();
-        gameLoop();
+        boolean startGame = showTitleMenu();
+        if (startGame) {
+            gameLoop();
+        }
     }
 
     /**
-     * タイトル画面を表示
+     * タイトルメニューを表示
+     * @return ゲームを開始する場合true
      */
-    private void showTitle() {
+    private boolean showTitleMenu() {
+        while (true) {
+            clearScreen();
+            System.out.println("╔════════════════════════════════════════╗");
+            System.out.println("║                                        ║");
+            System.out.println("║           BasicRPG テキスト版          ║");
+            System.out.println("║         ～ターン制冒険ゲーム～         ║");
+            System.out.println("║                                        ║");
+            System.out.println("╚════════════════════════════════════════╝");
+            System.out.println();
+
+            System.out.println("1. 新規ゲーム");
+            if (SaveManager.getInstance().hasAnySaveData()) {
+                System.out.println("2. 続きから");
+            }
+            System.out.println("0. 終了");
+            System.out.println();
+            System.out.print("> ");
+
+            int choice = readInt();
+
+            if (choice == 0) {
+                System.out.println("ゲームを終了します。");
+                return false;
+            } else if (choice == 1) {
+                initGame();
+                return true;
+            } else if (choice == 2 && SaveManager.getInstance().hasAnySaveData()) {
+                if (showLoadMenu()) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    /**
+     * ロードメニューを表示
+     * @return ロード成功した場合true
+     */
+    private boolean showLoadMenu() {
         clearScreen();
-        System.out.println("╔════════════════════════════════════════╗");
-        System.out.println("║                                        ║");
-        System.out.println("║           BasicRPG テキスト版          ║");
-        System.out.println("║         ～ターン制冒険ゲーム～         ║");
-        System.out.println("║                                        ║");
-        System.out.println("╚════════════════════════════════════════╝");
+        System.out.println("═══════════ セーブデータ選択 ═══════════");
         System.out.println();
-        System.out.println("Enterキーでゲームを開始...");
-        scanner.nextLine();
+
+        SaveManager sm = SaveManager.getInstance();
+        for (int i = 1; i <= sm.getMaxSlots(); i++) {
+            System.out.println(i + ". " + sm.getSlotSummary(i));
+        }
+        System.out.println("0. 戻る");
+        System.out.println();
+        System.out.print("> ");
+
+        int slot = readInt();
+
+        if (slot == 0) {
+            return false;
+        }
+
+        if (slot >= 1 && slot <= sm.getMaxSlots() && sm.hasSaveData(slot)) {
+            return loadGame(slot);
+        }
+
+        System.out.println("無効な選択です。");
+        waitForEnter();
+        return false;
+    }
+
+    /**
+     * ゲームをロードする
+     * @param slot スロット番号
+     * @return ロード成功した場合true
+     */
+    private boolean loadGame(int slot) {
+        SaveManager sm = SaveManager.getInstance();
+        SaveData data = sm.load(slot);
+
+        if (data == null) {
+            System.out.println("ロードに失敗しました。");
+            waitForEnter();
+            return false;
+        }
+
+        // プレイヤーを復元
+        player = sm.restorePlayer(data);
+        GameManager.getInstance().reset();
+        GameManager.getInstance().setPlayer(player);
+        sm.restoreGameManagerFlags(data);
+        wizardJoined = data.isWizardJoined();
+        running = true;
+
+        System.out.println("ロード完了！");
+        waitForEnter();
+        return true;
+    }
+
+    /**
+     * セーブメニューを表示
+     */
+    private void showSaveMenu() {
+        clearScreen();
+        System.out.println("═══════════ セーブ ═══════════");
+        System.out.println();
+
+        SaveManager sm = SaveManager.getInstance();
+        for (int i = 1; i <= sm.getMaxSlots(); i++) {
+            System.out.println(i + ". " + sm.getSlotSummary(i));
+        }
+        System.out.println("0. 戻る");
+        System.out.println();
+        System.out.print("セーブするスロットを選択 > ");
+
+        int slot = readInt();
+
+        if (slot == 0) {
+            return;
+        }
+
+        if (slot >= 1 && slot <= sm.getMaxSlots()) {
+            sm.save(slot, player, wizardJoined);
+            waitForEnter();
+        } else {
+            System.out.println("無効な選択です。");
+            waitForEnter();
+        }
     }
 
     /**
@@ -93,17 +208,32 @@ public class TextGame {
 
         // 隠士（レベル10以上かつ魔王撃破後）
         if (player.getLevel() >= 10 && GameManager.getInstance().isDemonKingDefeated()) {
-            System.out.println(optionNum++ + ". 隠士に会いに行く");
+            System.out.println(optionNum++ + ". 小道を通って山奥の庵へ");
         }
 
         System.out.println(optionNum++ + ". 冒険に出る");
         System.out.println(optionNum++ + ". 休憩する（HP回復）");
+        System.out.println("S. セーブ");
         System.out.println("0. ゲーム終了");
         System.out.println();
         System.out.print("> ");
 
-        int choice = readInt();
-        handleMainMenuChoice(choice);
+        String input = scanner.nextLine().trim().toUpperCase();
+
+        // セーブ処理
+        if (input.equals("S")) {
+            showSaveMenu();
+            return;
+        }
+
+        // 数字入力の処理
+        try {
+            int choice = Integer.parseInt(input);
+            handleMainMenuChoice(choice);
+        } catch (NumberFormatException e) {
+            System.out.println("無効な入力です。");
+            waitForEnter();
+        }
     }
 
     /**
@@ -186,7 +316,8 @@ public class TextGame {
         wizard.talkTo(player, wizardJoined);
 
         // 条件達成かつ未加入の場合、仲間に加入
-        if (!wizardJoined && player.hasDefeatedAllBasicEnemies()) {
+        // ただし、TrueHeroは別ルートなので転職不可
+        if (!wizardJoined && player.hasDefeatedAllBasicEnemies() && !(player instanceof TrueHero)) {
             wizardJoined = true;
             Wizard newWizard = new Wizard(player);  // 勇者の攻撃力×1.5
             player.setWizard(newWizard);
@@ -250,7 +381,7 @@ public class TextGame {
     }
 
     /**
-     * お姫様との対話（通常エンディング）
+     * お姫様との対話
      */
     private void talkToPrincess() {
         clearScreen();
@@ -259,11 +390,16 @@ public class TextGame {
 
         Princess princess = new Princess();
 
-        // 対話を実行
-        princess.talkTo(player);
+        // 対話を実行（TrueHeroの場合は通常エンディングを表示しない）
+        boolean showEnding = princess.talkTo(player);
 
-        // 通常エンディング
-        showNormalEnding();
+        if (showEnding) {
+            // 通常エンディング（SuperHeroのみ）
+            showNormalEnding();
+        } else {
+            // TrueHeroの場合は対話のみ
+            waitForEnter();
+        }
     }
 
     /**
@@ -373,8 +509,8 @@ public class TextGame {
         if (random.nextInt(100) < 70) {
             Enemy enemy;
 
-            // SuperHeroの場合、魔王も出現する可能性あり
-            if (player instanceof SuperHero) {
+            // 魔王現れる条件: SuperHero または TrueHero または Lv10以上
+            if (player instanceof SuperHero || player instanceof TrueHero || player.getLevel() >= 10) {
                 enemy = EnemyFactory.createRandomEnemyForSuper();
             } else {
                 enemy = EnemyFactory.createRandomEnemy();
@@ -397,14 +533,14 @@ public class TextGame {
         System.out.println("═══════════ 休憩 ═══════════");
         System.out.println();
 
+        // 非戦闘時は全員眠れる（TrueHeroも含む）
         if (player instanceof TrueHero) {
-            System.out.println("真勇者は眠ることができない...");
-            System.out.println("（戦闘中に眠るオプションは使えません）");
+            ((TrueHero) player).restAtInn();
         } else {
             player.sleep();
-            System.out.println("ぐっすり眠った！");
-            System.out.println("HPが全回復した！");
         }
+        System.out.println("ぐっすり眠った！");
+        System.out.println("HPが全回復した！");
         waitForEnter();
     }
 
@@ -602,10 +738,13 @@ public class TextGame {
                     targetWizard = random.nextBoolean();
                 }
 
+                // 攻撃名を取得
+                String attackName = (enemy instanceof Enemy) ? ((Enemy)enemy).getAttackName() : ((King)enemy).getAttackName();
+
                 if (targetWizard) {
                     Wizard wizard = player.getWizard();
                     wizard.takeDamage(enemyDamage);
-                    System.out.println(enemy.getName() + "の反撃！");
+                    System.out.println(enemy.getName() + "は" + attackName + "！");
                     System.out.println(wizard.getName() + "に" + enemyDamage + "のダメージ！");
 
                     if (!wizard.isAlive()) {
@@ -622,10 +761,10 @@ public class TextGame {
 
                     if (player instanceof SuperHero && ((SuperHero)player).isFlying() &&
                         !(enemy instanceof King) && !(enemy instanceof Hermit)) {
-                        System.out.println(enemy.getName() + "の反撃！");
+                        System.out.println(enemy.getName() + "は" + attackName + "！");
                         System.out.println(player.getName() + "は飛んでいるので攻撃を回避した！");
                     } else {
-                        System.out.println(enemy.getName() + "の反撃！");
+                        System.out.println(enemy.getName() + "は" + attackName + "！");
                         System.out.println(enemyDamage + "のダメージを受けた！");
                     }
                 }

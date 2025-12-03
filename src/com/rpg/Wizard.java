@@ -68,6 +68,14 @@ public class Wizard extends Human {
 
     @Override
     public String[] getDialogMessages(Hero hero) {
+        // TrueHeroの場合、仲間にならない
+        if (hero instanceof TrueHero) {
+            return new String[] {
+                "魔法使い：ほう...お前は別の道を選んだか。",
+                "真勇者よ、お前に私の力は不要だ。",
+                "己の力を信じて進め。"
+            };
+        }
         // 魔法使いが仲間になった後の対話（GUI用）
         return new String[] {
             "魔法使い：共に戦おう、勇者よ！",
@@ -82,8 +90,14 @@ public class Wizard extends Human {
      * @param hasJoined すでに仲間になっているか
      */
     public void talkTo(Hero hero, boolean hasJoined) {
+        // TrueHeroの場合、仲間にならない
+        if (hero instanceof TrueHero) {
+            talk("ほう...お前は別の道を選んだか。");
+            talk("真勇者よ、お前に私の力は不要だ。");
+            talk("己の力を信じて進め。");
+        }
         // 3種類の敵を倒していない場合
-        if (!hero.hasDefeatedAllBasicEnemies()) {
+        else if (!hero.hasDefeatedAllBasicEnemies()) {
             talk("ようこそ、若き勇者よ。");
             talk("だが、お前にはまだ早い...");
             talk("スライム、ゴブリン、狼男。");
