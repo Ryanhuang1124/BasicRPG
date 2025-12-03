@@ -1,31 +1,6 @@
 # Claude Code instructions (local only)
 CLAUDE.md
 .claude/settings.local.json
-bin/com/rpg/Character.class
-bin/com/rpg/DemonKing.class
-bin/com/rpg/Enemy.class
-bin/com/rpg/EnemyFactory.class
-bin/com/rpg/GameManager.class
-bin/com/rpg/Goblin.class
-bin/com/rpg/Hermit.class
-bin/com/rpg/Hero.class
-bin/com/rpg/Human.class
-bin/com/rpg/King.class
-bin/com/rpg/Princess.class
-bin/com/rpg/Slime.class
-bin/com/rpg/SuperHero.class
-bin/com/rpg/TrueHero.class
-bin/com/rpg/Werewolf.class
-bin/com/rpg/Wizard.class
-bin/com/rpg/cui/TextGame.class
-bin/com/rpg/gui/BattleState.class
-bin/com/rpg/gui/DialogState.class
-bin/com/rpg/gui/GamePanel.class
-bin/com/rpg/gui/GamePanel$1.class
-bin/com/rpg/gui/GameState.class
-bin/com/rpg/gui/GameWindow.class
-bin/com/rpg/gui/GUIManager.class
-bin/com/rpg/gui/KingRevealState.class
-bin/com/rpg/gui/MapState.class
-bin/com/rpg/gui/TrueEndingState.class
-bin/com/rpg/gui/TrueTrueEndingState.class
+
+# Compiled class files
+*.class
