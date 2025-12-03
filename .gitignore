@@ -1,6 +1,3 @@
 # Claude Code instructions (local only)
 CLAUDE.md
 .claude/settings.local.json
-
-# Compiled class files
-*.class
