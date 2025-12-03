@@ -151,7 +151,7 @@ public class TextGame {
 
         // 冒険に出る
         if (choice == optionNum++) {
-            exploreGrassland();
+            explore();
             return;
         }
 
@@ -362,7 +362,7 @@ public class TextGame {
     /**
      * 冒険に出る
      */
-    private void exploreGrassland() {
+    private void explore() {
         clearScreen();
         System.out.println("═══════════ 冒険 ═══════════");
         System.out.println();
