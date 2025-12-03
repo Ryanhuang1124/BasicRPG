@@ -46,3 +46,4 @@ java -Dfile.encoding=UTF-8 -cp bin com.rpg.cui.TextGame
 
 - PowerShellでは `-D` パラメータを引用符で囲む必要がある
 - 日本語が文字化けする場合は `chcp 65001` を実行してからゲームを起動する
+- ReleasesからJAR版もダウンロードできる
