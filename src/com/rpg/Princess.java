@@ -19,7 +19,17 @@ public class Princess extends Human {
     public boolean talkTo(Hero hero) {
         // 邪悪な王撃破後（洗脳解除、父を失った悲しみ）
         if (GameManager.getInstance().isEvilKingDefeated()) {
-            talk("お父様...");
+            talk("あなた...お父様を...");
+            talk("父はあんなに恐ろしいことをしていたのね...");
+            talk("でも...でも父は父なの...");
+            talk("");
+            talk("今、この国には王がいない。");
+            talk("誰かが統治しなければならない...");
+            talk("");
+            talk("あなたは...どうするつもり？");
+            talk("");
+            talk("...そう、わかったわ。");
+            talk("あなたが新しい王になるのね...");
             return false;
         }
         // TrueHeroの場合、通常エンディングを表示しない（洗脳されているため無言）

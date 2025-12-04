@@ -200,9 +200,8 @@ public class TextGame {
             System.out.println(optionNum++ + ". 王様に会いに行く");
         }
 
-        // お姫様（魔王撃破後かつ邪悪な王撃破前のみ）
-        if (GameManager.getInstance().isDemonKingDefeated() &&
-            !GameManager.getInstance().isEvilKingDefeated()) {
+        // お姫様（魔王撃破後）
+        if (GameManager.getInstance().isDemonKingDefeated()) {
             System.out.println(optionNum++ + ". お姫様に会いに行く");
         }
 
@@ -262,9 +261,8 @@ public class TextGame {
             }
         }
 
-        // お姫様（魔王撃破後かつ邪悪な王撃破前のみ）
-        if (GameManager.getInstance().isDemonKingDefeated() &&
-            !GameManager.getInstance().isEvilKingDefeated()) {
+        // お姫様（魔王撃破後）
+        if (GameManager.getInstance().isDemonKingDefeated()) {
             if (choice == optionNum++) {
                 talkToPrincess();
                 return;
@@ -350,6 +348,11 @@ public class TextGame {
         // 対話を実行
         king.talkTo(player);
 
+        // 初めて王様に会った場合、フラグを設定
+        if (!GameManager.getInstance().hasMetKing()) {
+            GameManager.getInstance().setHasMetKing(true);
+        }
+
         // TrueHeroで正体を暴く選択
         if (player instanceof TrueHero && !king.isIdentityRevealed()) {
             System.out.println();
@@ -390,6 +393,24 @@ public class TextGame {
 
         Princess princess = new Princess();
 
+        // 邪悪な王を倒した後、公主対話で真エンディング
+        if (GameManager.getInstance().isEvilKingDefeated()) {
+            princess.talkTo(player);
+            waitForEnter();
+
+            // 隠士の声が聞こえる
+            clearScreen();
+            System.out.println("その時、どこからか声が聞こえた...");
+            System.out.println();
+            System.out.println("隠士の声：「...ふん。」");
+            System.out.println("隠士の声：「また一人、野心に飲まれた者が現れたか。」");
+            System.out.println("隠士の声：「所詮...また一つの腐敗した王が生まれただけだ...」");
+            waitForEnter();
+
+            showTrueEnding();
+            return;
+        }
+
         // 対話を実行（TrueHeroの場合は通常エンディングを表示しない）
         boolean showEnding = princess.talkTo(player);
 
@@ -413,21 +434,15 @@ public class TextGame {
         Hermit hermit = new Hermit();
         boolean evilKingDefeated = GameManager.getInstance().isEvilKingDefeated();
 
-        // 対話を実行
+        // 対話を実行（邪悪な王撃破後は転生ルートへ誘導）
         boolean shouldBattle = hermit.talkTo(player, evilKingDefeated);
 
-        // 邪悪な王を倒した後、決闘になる場合
-        if (shouldBattle) {
+        // 邪悪な王撃破前で決闘フラグが立っている場合
+        if (shouldBattle && !evilKingDefeated) {
             System.out.println();
             System.out.println("隠士が決闘を仕掛けてきた！");
             waitForEnter();
             battle(hermit, false);
-            return;
-        }
-
-        // 邪悪な王撃破後の場合、対話のみで終了
-        if (evilKingDefeated) {
-            waitForEnter();
             return;
         }
 
@@ -456,6 +471,16 @@ public class TextGame {
                     System.out.println("★ 転生完了！");
                     System.out.println("★ レベルが1にリセットされた！");
                     System.out.println("★ 能力を継承してさらに強くなれる！");
+                } else if (choice == 2 && evilKingDefeated) {
+                    // 邪悪な王撃破後、転生を拒否した場合、20%で決闘
+                    if (random.nextInt(100) < 20) {
+                        System.out.println();
+                        System.out.println("隠士：「...そうか。」");
+                        System.out.println("隠士：「ならば、私が直接お前を止めねばならぬ！」");
+                        waitForEnter();
+                        battle(hermit, false);
+                        return;
+                    }
                 }
             }
             waitForEnter();
@@ -499,6 +524,15 @@ public class TextGame {
      * 冒険に出る
      */
     private void explore() {
+        // 王様に会っていない場合は冒険できない
+        if (!GameManager.getInstance().hasMetKing()) {
+            clearScreen();
+            System.out.println("まだ王様から任務を受けていない...");
+            System.out.println("先に王様に会いに行こう。");
+            waitForEnter();
+            return;
+        }
+
         clearScreen();
         System.out.println("═══════════ 冒険 ═══════════");
         System.out.println();
@@ -720,7 +754,31 @@ public class TextGame {
             // 敵の反撃
             if (enemy.isAlive()) {
                 System.out.println();
-                int enemyDamage = enemy.getAttack();
+                int enemyDamage;
+
+                // 隠士の場合は特殊攻撃（プレイヤーの最大HPの20%）
+                if (enemy instanceof Hermit) {
+                    enemyDamage = ((Hermit) enemy).specialAttack(player);
+                    System.out.println("隠士は奥義を放った！");
+                    System.out.println("プレイヤーの最大HPの20%のダメージ！");
+                    System.out.println(enemyDamage + "のダメージを受けた！");
+
+                    if (!player.isAlive()) {
+                        System.out.println();
+                        System.out.println("やられてしまった...");
+                        System.out.println("ゲームオーバー");
+                        waitForEnter();
+                        running = false;
+                        battleRunning = false;
+                    }
+
+                    if (battleRunning) {
+                        waitForEnter();
+                    }
+                    continue;
+                }
+
+                enemyDamage = enemy.getAttack();
 
                 // 王様戦でお姫様が洗脳応援（30%）
                 if (isKingBattle && princess != null && princess.isAlive()) {
@@ -811,7 +869,9 @@ public class TextGame {
             System.out.println("魔王を倒した！");
             System.out.println("お姫様を救い出すことができる！");
         } else if (enemy instanceof King) {
-            showTrueEnding();
+            // 邪悪な王を倒したフラグを設定（エンディングは公主対話で表示）
+            GameManager.getInstance().setEvilKingDefeated(true);
+            System.out.println();
         } else if (enemy instanceof Hermit) {
             showTrueTrueEnding();
         }
@@ -858,7 +918,6 @@ public class TextGame {
         System.out.println("║                                        ║");
         System.out.println("╚════════════════════════════════════════╝");
         System.out.println();
-        System.out.println("邪悪な王を倒した...");
         System.out.println("洗脳されたお姫様も...力尽きた。");
         System.out.println();
         System.out.println("この国には王がいない。");
@@ -877,7 +936,6 @@ public class TextGame {
         System.out.println("プレイしてくれてありがとう！");
         waitForEnter();
 
-        GameManager.getInstance().setEvilKingDefeated(true);
         GameManager.getInstance().setGameCleared(true);
         running = false;
     }

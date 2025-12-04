@@ -17,7 +17,6 @@ public class TrueEndingState implements GameState {
     public TrueEndingState(Hero player) {
         this.player = player;
         this.messages = new String[] {
-            "邪悪な王を倒した...",
             "洗脳されたお姫様も...力尽きた。",
             "",
             "この国には王がいない。",

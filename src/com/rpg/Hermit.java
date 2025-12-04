@@ -8,7 +8,7 @@ package com.rpg;
 public class Hermit extends Human {
 
     public Hermit() {
-        super("隠士", 100000000, 0);  // HP: 1億、最終決戦用
+        super("隠士", 100000000, 1);  // HP: 1億、特殊攻撃のみ使用
     }
 
     @Override
@@ -184,33 +184,20 @@ public class Hermit extends Human {
      * 勇者と対話する（CUI用）
      * @param hero 勇者
      * @param evilKingDefeated 邪悪な王が倒されたか
-     * @return 決闘を挑むか（20%の確率）
+     * @return 決闘を挑むか（邪悪な王撃破後は常にfalse、転生選択で処理）
      */
     public boolean talkTo(Hero hero, boolean evilKingDefeated) {
-        // 邪悪な王を倒した後
+        // 邪悪な王を倒した後はTrueHeroの転生ルートへ
         if (evilKingDefeated) {
-            // 20%の確率で決闘
-            if (new java.util.Random().nextInt(100) < 20) {
-                talk("...");
-                talk("また一人、権力に溺れた者が現れたか。");
-                talk("お前は邪悪な王を倒し、この国の王になった。");
-                talk("既にお前の力は私が授けたもの。");
-                talk("この事態を招いた責任は私にもある...");
-                talk("ならば...");
-                talk("私自身の手でお前を止めねばならぬ！");
-                return true;  // 決闘を挑む
-            } else {
-                talk("...");
-                talk("また一人、権力に溺れた者が現れたか。");
-                talk("お前は邪悪な王を倒し、この国の王になった。");
-                talk("だが...お前は本当に正義なのか？");
-                talk("圧倒的な力を手に入れた者は、");
-                talk("いつか必ず変わってしまう。");
-                talk("お前もいずれ...");
-                talk("かつての王と同じ道を歩むだろう。");
-                talk("...去れ、新たな王よ。");
-                return false;  // 決闘しない
-            }
+            talk("...");
+            talk("また一人、権力に溺れた者が現れたか。");
+            talk("お前は邪悪な王を倒し、この国の王になった。");
+            talk("だが...お前は本当に正義なのか？");
+            talk("圧倒的な力を手に入れた者は、");
+            talk("いつか必ず変わってしまう。");
+            talk("");
+            talk("...それでも、さらなる力を求めるか？");
+            return false;  // 転生選択へ
         }
 
         // TrueHeroの場合
