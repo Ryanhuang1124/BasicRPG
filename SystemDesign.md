@@ -1,67 +1,3 @@
-###  主要クラス仕様
-
-#### **TextGame（メインクラス）**
-```java
-// 役割：ゲームループとメニュー管理
-- scanner: Scanner                // ユーザー入力
-- player: Hero                    // プレイヤー（動的置き換え可能）
-- wizardJoined: boolean           // 魔法使い加入フラグ
-- running: boolean                // ゲームループフラグ
-
-+ start(): void                   // ゲーム開始
-- gameLoop(): void                // メインループ
-- showMainMenu(): void            // 村のメニュー
-- battle(Character, boolean): void // 戦闘処理
-- explore(): void                 // 冒険に出る
-```
-
-#### **GameManager**
-```java
-// 役割：ゲーム進行フラグとプレイヤー管理
-- player: Hero                    // 動的に置き換え可能
-- demonKingDefeated: boolean      // 魔王撃破フラグ
-- evilKingDefeated: boolean       // 邪悪な王撃破フラグ
-- gameCleared: boolean            // ゲームクリアフラグ
-
-+ getInstance(): GameManager      // シングルトン取得
-+ setPlayer(Hero): void           // 転職時の置き換え
-```
-
-#### **SaveManager（CUI版専用）**
-```java
-// 役割：セーブ/ロード機能
-- maxSlots: int = 3               // セーブスロット数
-
-+ save(int, Hero, boolean): void  // セーブ実行
-+ load(int): SaveData             // ロード実行
-+ hasSaveData(int): boolean       // セーブデータ存在確認
-+ getSlotSummary(int): String     // スロット情報表示
-```
-
-#### **Hero → SuperHero / TrueHero**
-```java
-Hero (基底)
-├── hp, maxHp, maxAttack, level, exp
-├── gainExp(int): boolean         // 経験値獲得
-├── sleep(): void                 // HP回復
-└── canSleep(): boolean           // 眠れるか判定
-
-SuperHero (継承)
-├── isFlying: boolean             // 飛行状態
-├── fly(): void / land(): void    // 飛行切替
-└── 攻撃力: 40 (×2倍)、飛行能力
-
-TrueHero (継承)
-├── rebirthCount: int             // 転生回数
-├── baseMaxHp, baseMaxAttack      // 基礎値
-├── recalculateStats(): void      // 複利計算
-├── canRebirth(): boolean         // 転生可能判定
-├── restAtInn(): void             // 村での休憩（眠れる）
-└── 成長式: 能力 = 基礎値 × 1.1^(Lv-1)
-```
-
----
-
 ## ゲームフロー
 
 ### メインループ構造
@@ -74,7 +10,7 @@ TrueHero (継承)
 
 gameLoop() {
   while (running) {
-    showMainMenu()  // 村のメニュー
+    showMainMenu()  // 主メニュー
   }
 }
 ```
