@@ -246,6 +246,7 @@ public class SaveManager {
      */
     public void restoreGameManagerFlags(SaveData data) {
         GameManager gm = GameManager.getInstance();
+        gm.setHasMetKing(data.hasMetKing());
         gm.setDemonKingDefeated(data.isDemonKingDefeated());
         gm.setEvilKingDefeated(data.isEvilKingDefeated());
     }

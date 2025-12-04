@@ -14,6 +14,7 @@ public class GameManager {
     private Hero player;
 
     // ゲーム進行フラグ
+    private boolean hasMetKing = false;         // 王様に会ったか
     private boolean demonKingDefeated = false;  // 魔王撃破済み
     private boolean evilKingDefeated = false;   // 邪悪な王撃破済み
     private boolean gameCleared = false;        // ゲームクリア
@@ -37,6 +38,7 @@ public class GameManager {
      */
     public void reset() {
         this.player = null;
+        this.hasMetKing = false;
         this.demonKingDefeated = false;
         this.evilKingDefeated = false;
         this.gameCleared = false;
@@ -59,6 +61,20 @@ public class GameManager {
     }
 
     // ===== ゲーム進行フラグ =====
+
+    /**
+     * 王様に会ったフラグを設定
+     */
+    public void setHasMetKing(boolean met) {
+        this.hasMetKing = met;
+    }
+
+    /**
+     * 王様に会ったかチェック
+     */
+    public boolean hasMetKing() {
+        return hasMetKing;
+    }
 
     /**
      * 魔王撃破フラグを設定

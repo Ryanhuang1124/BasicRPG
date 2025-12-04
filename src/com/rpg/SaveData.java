@@ -32,6 +32,7 @@ public class SaveData implements Serializable {
 
     // ゲーム進行フラグ
     private boolean wizardJoined;
+    private boolean hasMetKing;
     private boolean demonKingDefeated;
     private boolean evilKingDefeated;
 
@@ -74,6 +75,7 @@ public class SaveData implements Serializable {
 
         // GameManagerからフラグを取得
         GameManager gm = GameManager.getInstance();
+        this.hasMetKing = gm.hasMetKing();
         this.demonKingDefeated = gm.isDemonKingDefeated();
         this.evilKingDefeated = gm.isEvilKingDefeated();
 
@@ -140,6 +142,10 @@ public class SaveData implements Serializable {
 
     public boolean isWizardJoined() {
         return wizardJoined;
+    }
+
+    public boolean hasMetKing() {
+        return hasMetKing;
     }
 
     public boolean isDemonKingDefeated() {

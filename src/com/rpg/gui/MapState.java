@@ -379,6 +379,12 @@ public class MapState implements GameState {
 
         // 草地で移動したかチェック
         if (map[player.getY()][player.getX()] == 1) {
+            // 王様に会っていない場合、冒険できない
+            if (!GameManager.getInstance().hasMetKing()) {
+                System.out.println("まず王様に会って話を聞かなければならない！");
+                return;
+            }
+
             // 草地上で、敵遭遇の判定
             if (random.nextInt(100) < 30) {  // 30% の確率で遭遇
                 Enemy enemy;
@@ -496,6 +502,8 @@ public class MapState implements GameState {
         // 王様との対話（邪悪な王撃破前のみ）
         if (!GameManager.getInstance().isEvilKingDefeated() &&
             isAdjacentTo(px, py, KING_X, KING_Y)) {
+            // 王様に会ったことを記録
+            GameManager.getInstance().setHasMetKing(true);
             King king = new King();
             String[] messages = king.getDialogMessages(player);
             GUIManager.getInstance().changeState(new DialogState(player, king, "王様", messages));
